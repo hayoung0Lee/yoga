@@ -8,15 +8,15 @@
  * @format
  */
 
-import React, {Component} from 'react';
-import yoga, {Node} from 'yoga-layout/dist/entry-browser';
-import PositionGuide from './PositionGuide';
-import PositionRecord from './PositionRecord';
-import LayoutRecord from './LayoutRecord';
-import type {LayoutRecordT} from './LayoutRecord';
-import type {Yoga$Direction, Yoga$Node} from 'yoga-layout';
+import React, { Component } from "react";
+import yoga, { Node } from "yoga-layout-prebuilt";
+import PositionGuide from "./PositionGuide";
+import PositionRecord from "./PositionRecord";
+import LayoutRecord from "./LayoutRecord";
+import type { LayoutRecordT } from "./LayoutRecord";
+import type { Yoga$Direction, Yoga$Node } from "yoga-layout-prebuilt";
 
-import './YogaNode.css';
+import "./YogaNode.css";
 
 type ComputedLayout = {|
   left: number,
@@ -24,7 +24,7 @@ type ComputedLayout = {|
   width: number,
   height: number,
   children: Array<ComputedLayout>,
-  node: Yoga$Node,
+  node: Yoga$Node
 |};
 
 type Props = {|
@@ -37,12 +37,12 @@ type Props = {|
   label?: string,
   showGuides: boolean,
   onClick?: (path: Array<number>) => void,
-  onDoubleClick?: (path: Array<number>) => void,
+  onDoubleClick?: (path: Array<number>) => void
 |};
 
 type State = {
   visible?: boolean,
-  hovered: boolean,
+  hovered: boolean
 };
 
 export default class YogaNode extends Component<Props, State> {
@@ -50,12 +50,12 @@ export default class YogaNode extends Component<Props, State> {
 
   static defaultProps = {
     path: [],
-    label: 'root',
-    showGuides: true,
+    label: "root",
+    showGuides: true
   };
 
   state = {
-    hovered: false,
+    hovered: false
   };
   computedLayout: ?ComputedLayout;
   rootNode: ?Yoga$Node;
@@ -66,13 +66,13 @@ export default class YogaNode extends Component<Props, State> {
       // is root node
       this.calculateLayout(props);
       this.state = {
-        visible: !Boolean(props.computedLayout),
+        visible: !Boolean(props.computedLayout)
       };
     }
   }
 
   componentDidMount() {
-    setTimeout(() => this.setState({visible: true}), 200);
+    setTimeout(() => this.setState({ visible: true }), 200);
   }
 
   componentWillReceiveProps(nextProps: Props) {
@@ -93,7 +93,7 @@ export default class YogaNode extends Component<Props, State> {
   }
 
   onMouseMove = e => {
-    this.setState({hovered: e.target === this._ref});
+    this.setState({ hovered: e.target === this._ref });
   };
 
   calculateLayout(props: Props) {
@@ -101,7 +101,7 @@ export default class YogaNode extends Component<Props, State> {
     root.calculateLayout(
       props.layoutDefinition.width,
       props.layoutDefinition.height,
-      props.direction,
+      props.direction
     );
     this.computedLayout = this.getComputedLayout(root);
     this.rootNode = root;
@@ -112,38 +112,38 @@ export default class YogaNode extends Component<Props, State> {
 
     const defaultLayout = LayoutRecord({});
     [
-      'width',
-      'height',
-      'minWidth',
-      'maxWidth',
-      'minHeight',
-      'maxHeight',
-      'justifyContent',
-      'alignItems',
-      'alignSelf',
-      'alignContent',
-      'flexGrow',
-      'flexShrink',
-      'positionType',
-      'aspectRatio',
-      'flexWrap',
-      'flexDirection',
+      "width",
+      "height",
+      "minWidth",
+      "maxWidth",
+      "minHeight",
+      "maxHeight",
+      "justifyContent",
+      "alignItems",
+      "alignSelf",
+      "alignContent",
+      "flexGrow",
+      "flexShrink",
+      "positionType",
+      "aspectRatio",
+      "flexWrap",
+      "flexDirection"
     ].forEach(key => {
       try {
         const value =
-          layoutDefinition[key] === ''
+          layoutDefinition[key] === ""
             ? defaultLayout[key]
             : layoutDefinition[key];
         root[`set${key[0].toUpperCase()}${key.substr(1)}`](value);
       } catch (e) {}
     });
 
-    ['padding', 'margin', 'position', 'border'].forEach(key => {
-      ['top', 'right', 'bottom', 'left'].forEach(direction => {
+    ["padding", "margin", "position", "border"].forEach(key => {
+      ["top", "right", "bottom", "left"].forEach(direction => {
         try {
           root[`set${key[0].toUpperCase()}${key.substr(1)}`](
             yoga[`EDGE_${direction.toUpperCase()}`],
-            layoutDefinition[key][direction],
+            layoutDefinition[key][direction]
           );
         } catch (e) {}
       });
@@ -164,13 +164,13 @@ export default class YogaNode extends Component<Props, State> {
       ...node.getComputedLayout(),
       node,
       children: Array.apply(null, Array(node.getChildCount())).map((_, i) =>
-        this.getComputedLayout(node.getChild(i)),
-      ),
+        this.getComputedLayout(node.getChild(i))
+      )
     };
   };
 
   onClick = (e: SyntheticMouseEvent<>) => {
-    const {onClick} = this.props;
+    const { onClick } = this.props;
     if (onClick) {
       e.stopPropagation();
       onClick(this.props.path);
@@ -178,39 +178,40 @@ export default class YogaNode extends Component<Props, State> {
   };
 
   onDoubleClick = (e: SyntheticMouseEvent<>) => {
-    const {onDoubleClick} = this.props;
+    const { onDoubleClick } = this.props;
     if (onDoubleClick) {
       e.stopPropagation();
       onDoubleClick(this.props.path);
     }
   };
 
-  onMouseLeave = (e: SyntheticMouseEvent<>) => this.setState({hovered: false});
+  onMouseLeave = (e: SyntheticMouseEvent<>) =>
+    this.setState({ hovered: false });
 
-  showPositionGuides({node}: ComputedLayout) {
+  showPositionGuides({ node }: ComputedLayout) {
     const padding = PositionRecord({
       top: node.getComputedPadding(yoga.EDGE_TOP),
       left: node.getComputedPadding(yoga.EDGE_LEFT),
       right: node.getComputedPadding(yoga.EDGE_RIGHT),
-      bottom: node.getComputedPadding(yoga.EDGE_BOTTOM),
+      bottom: node.getComputedPadding(yoga.EDGE_BOTTOM)
     });
     const border = PositionRecord({
       top: node.getComputedBorder(yoga.EDGE_TOP),
       left: node.getComputedBorder(yoga.EDGE_LEFT),
       right: node.getComputedBorder(yoga.EDGE_RIGHT),
-      bottom: node.getComputedBorder(yoga.EDGE_BOTTOM),
+      bottom: node.getComputedBorder(yoga.EDGE_BOTTOM)
     });
     const margin = PositionRecord({
       top: node.getComputedMargin(yoga.EDGE_TOP),
       left: node.getComputedMargin(yoga.EDGE_LEFT),
       right: node.getComputedMargin(yoga.EDGE_RIGHT),
-      bottom: node.getComputedMargin(yoga.EDGE_BOTTOM),
+      bottom: node.getComputedMargin(yoga.EDGE_BOTTOM)
     });
     const position = PositionRecord({
       top: node.getPosition(yoga.EDGE_TOP).value,
       left: node.getPosition(yoga.EDGE_LEFT).value,
       right: node.getPosition(yoga.EDGE_RIGHT).value,
-      bottom: node.getPosition(yoga.EDGE_BOTTOM).value,
+      bottom: node.getPosition(yoga.EDGE_BOTTOM).value
     });
 
     return [
@@ -239,7 +240,7 @@ export default class YogaNode extends Component<Props, State> {
         offset={margin}
         position={position}
         color="rgba(115, 51, 205, 0.1)"
-      />,
+      />
     ];
   }
 
@@ -249,29 +250,32 @@ export default class YogaNode extends Component<Props, State> {
       className,
       path,
       selectedNodePath,
-      label,
+      label
     } = this.props;
 
     // $FlowFixMe
     const computedLayout: ComputedLayout =
       this.props.computedLayout || this.computedLayout;
-    const {left, top, width, height, children} = computedLayout;
+    const { left, top, width, height, children } = computedLayout;
 
     const isFocused = selectedNodePath && selectedNodePath.length === 0;
 
     return (
       <div
-        className={`YogaNode ${isFocused ? 'focused' : ''} ${className || ''} ${
-          this.state.visible ? '' : 'invisible'
-        } ${this.state.hovered ? 'hover' : ''}`}
-        style={path.length == 0 ? {width, height} : {left, top, width, height}}
+        className={`YogaNode ${isFocused ? "focused" : ""} ${className || ""} ${
+          this.state.visible ? "" : "invisible"
+        } ${this.state.hovered ? "hover" : ""}`}
+        style={
+          path.length == 0 ? { width, height } : { left, top, width, height }
+        }
         onDoubleClick={this.onDoubleClick}
         onMouseMove={this.onMouseMove}
         onMouseLeave={this.onMouseLeave}
         ref={ref => {
           this._ref = ref;
         }}
-        onClick={this.onClick}>
+        onClick={this.onClick}
+      >
         {label && <div className="label">{label}</div>}
         {isFocused &&
           this.props.showGuides &&

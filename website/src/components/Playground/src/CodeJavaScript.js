@@ -8,22 +8,22 @@
  * @format
  */
 
-import yoga from 'yoga-layout/dist/entry-browser';
-import LayoutRecord from './LayoutRecord';
-import PositionRecord from './PositionRecord';
-import type {LayoutRecordT} from './LayoutRecord';
-import type {Yoga$Direction} from 'yoga-layout';
+import yoga from "yoga-layout-prebuilt";
+import LayoutRecord from "./LayoutRecord";
+import PositionRecord from "./PositionRecord";
+import type { LayoutRecordT } from "./LayoutRecord";
+import type { Yoga$Direction } from "yoga-layout-prebuilt";
 
 export const JSEnumLookup = {
-  justifyContent: 'JUSTIFY_',
-  alignItems: 'ALIGN_',
-  alignContent: 'ALIGN_',
-  alignSelf: 'ALIGN_',
-  position: 'POSITION_',
-  flexDirection: 'DIRECTION_',
-  flexWrap: 'WRAP_',
-  positionType: 'POSITION_TYPE_',
-  direction: 'DIRECTION_',
+  justifyContent: "JUSTIFY_",
+  alignItems: "ALIGN_",
+  alignContent: "ALIGN_",
+  alignSelf: "ALIGN_",
+  position: "POSITION_",
+  flexDirection: "DIRECTION_",
+  flexWrap: "WRAP_",
+  positionType: "POSITION_TYPE_",
+  direction: "DIRECTION_"
 };
 
 function getEnum(yogaEnum: string, value: string | number): string {
@@ -36,38 +36,38 @@ function setProperty(
   name: string,
   key: string,
   value: string,
-  enumValue?: string,
+  enumValue?: string
 ): string {
   return [
     name,
-    '.set',
+    ".set",
     key[0].toUpperCase() + key.substr(1),
-    '(',
-    enumValue ? `${enumValue}, ` : '',
+    "(",
+    enumValue ? `${enumValue}, ` : "",
     JSEnumLookup[key] ? getEnum(JSEnumLookup[key], value) : value,
-    ');',
-  ].join('');
+    ");"
+  ].join("");
 }
 
 function getLayoutCode(
   node: LayoutRecordT,
   name: string,
-  index: number,
+  index: number
 ): string {
   const lines = [];
-  const childName = (i: number) => `${name === 'root' ? 'node' : name}_${i}`;
+  const childName = (i: number) => `${name === "root" ? "node" : name}_${i}`;
 
   lines.push(
-    ...node.children.map((node, i) => getLayoutCode(node, childName(i), i)),
+    ...node.children.map((node, i) => getLayoutCode(node, childName(i), i))
   );
 
-  lines.push('', `// create node ${name}`, `const ${name} = Node.create();`);
-  const untouchedNode = LayoutRecord({width: '', height: ''});
+  lines.push("", `// create node ${name}`, `const ${name} = Node.create();`);
+  const untouchedNode = LayoutRecord({ width: "", height: "" });
   Object.keys(untouchedNode.toJS()).forEach(key => {
-    if (key !== 'children' && untouchedNode[key] !== node[key]) {
+    if (key !== "children" && untouchedNode[key] !== node[key]) {
       if (node[key] instanceof PositionRecord) {
         // iterate through position record
-        const {top, left, right, bottom} = node[key].toJS();
+        const { top, left, right, bottom } = node[key].toJS();
         if (
           top !== untouchedNode[key].top &&
           top === left &&
@@ -75,27 +75,27 @@ function getLayoutCode(
           top === bottom
         ) {
           // all edges
-          lines.push(setProperty(name, key, node[key].top, getEnum('edge', 8)));
+          lines.push(setProperty(name, key, node[key].top, getEnum("edge", 8)));
           return;
         }
         const alreadySet = [];
         if (top !== untouchedNode[key].top && top === bottom) {
-          lines.push(setProperty(name, key, node[key].top, getEnum('edge', 7)));
-          alreadySet.push('top', 'bottom');
+          lines.push(setProperty(name, key, node[key].top, getEnum("edge", 7)));
+          alreadySet.push("top", "bottom");
         }
         if (left !== untouchedNode[key].left && left === right) {
           lines.push(
-            setProperty(name, key, node[key].left, getEnum('edge', 6)),
+            setProperty(name, key, node[key].left, getEnum("edge", 6))
           );
-          alreadySet.push('left', 'right');
+          alreadySet.push("left", "right");
         }
-        ['left', 'top', 'right', 'bottom'].forEach((pKey, i) => {
+        ["left", "top", "right", "bottom"].forEach((pKey, i) => {
           if (
             node[key][pKey] !== untouchedNode[key][pKey] &&
             alreadySet.indexOf(pKey) === -1
           ) {
             lines.push(
-              setProperty(name, key, node[key][pKey], getEnum('edge', i)),
+              setProperty(name, key, node[key][pKey], getEnum("edge", i))
             );
           }
         });
@@ -107,30 +107,30 @@ function getLayoutCode(
 
   if (node.children && node.children.size > 0) {
     lines.push(
-      '',
-      '// insert children',
+      "",
+      "// insert children",
       ...node.children.map(
-        (_, i) => `${name}.insertChild(${childName(i)}, ${i});`,
-      ),
+        (_, i) => `${name}.insertChild(${childName(i)}, ${i});`
+      )
     );
   }
 
-  return lines.join('\n');
+  return lines.join("\n");
 }
 
 export default function generateCode(
   root: LayoutRecordT,
-  direction: Yoga$Direction,
+  direction: Yoga$Direction
 ): string {
-  const rootNodeName = 'root';
+  const rootNodeName = "root";
   return [
-    `import yoga, {Node} from 'yoga-layout';`,
+    `import yoga, {Node} from 'yoga-layout-prebuilt';`,
     getLayoutCode(root, rootNodeName, 0),
-    '',
+    "",
     `${rootNodeName}.calculateLayout(${root.width}, ${root.height}, ${getEnum(
-      'direction',
-      direction,
+      "direction",
+      direction
     )});`,
-    `${rootNodeName}.getComputedLayout();`,
-  ].join('\n');
+    `${rootNodeName}.getComputedLayout();`
+  ].join("\n");
 }

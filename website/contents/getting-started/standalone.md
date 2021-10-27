@@ -30,7 +30,7 @@ This is an example on how to use Yoga in JavaScript, for a full API reference,
 have a look at the [flow-type definitions](https://github.com/facebook/yoga/blob/main/javascript/sources/entry-common.js#L123).
 
 ```js
-import yoga, {Node} from 'yoga-layout';
+import yoga, { Node } from "yoga-layout-prebuilt";
 
 const root = Node.create();
 root.setWidth(500);

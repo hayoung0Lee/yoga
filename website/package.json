@@ -20,7 +20,7 @@
     "immutable": "^4.0.0-rc.9",
     "react-helmet": "^5.2.0",
     "react-syntax-highlighter": "^8.0.0",
-    "yoga-layout": "^1.9.3"
+    "yoga-layout-prebuilt": "^1.10.0"
   },
   "keywords": [
     "gatsby"
