@@ -8,19 +8,19 @@
  * @format
  */
 
-import {Record, List} from 'immutable';
-import type {RecordOf} from 'immutable';
-import PositionRecord from './PositionRecord';
-import type {PositionRecordT} from './PositionRecord';
-import yoga from 'yoga-layout/dist/entry-browser';
+import { Record, List } from "immutable";
+import type { RecordOf } from "immutable";
+import PositionRecord from "./PositionRecord";
+import type { PositionRecordT } from "./PositionRecord";
+import yoga from "yoga-layout-prebuilt";
 
 import type {
   Yoga$Align,
   Yoga$JustifyContent,
   Yoga$FlexDirection,
   Yoga$FlexWrap,
-  Yoga$PositionType,
-} from 'yoga-layout';
+  Yoga$PositionType
+} from "yoga-layout-prebuilt";
 
 export type LayoutRecordT = RecordOf<{
   width?: ?number,
@@ -39,7 +39,7 @@ export type LayoutRecordT = RecordOf<{
   alignSelf?: Yoga$Align,
   alignContent?: Yoga$Align,
   flexDirection?: Yoga$FlexDirection,
-  flexBasis?: number | 'auto',
+  flexBasis?: number | "auto",
   flexGrow?: number,
   flexShrink?: number,
   padding?: number,
@@ -49,16 +49,16 @@ export type LayoutRecordT = RecordOf<{
   minWidth?: number,
   maxWidth?: number,
   minHeight?: number,
-  maxHeight?: number,
+  maxHeight?: number
 }>;
 
 const r: LayoutRecordT = Record({
-  width: 'auto',
-  height: 'auto',
+  width: "auto",
+  height: "auto",
   minWidth: 0,
   minHeight: 0,
-  maxWidth: 'none',
-  maxHeight: 'none',
+  maxWidth: "none",
+  maxHeight: "none",
   justifyContent: yoga.JUSTIFY_FLEX_START,
   alignItems: yoga.ALIGN_STRETCH,
   alignSelf: yoga.ALIGN_AUTO,
@@ -71,19 +71,19 @@ const r: LayoutRecordT = Record({
     left: NaN,
     top: NaN,
     right: NaN,
-    bottom: NaN,
+    bottom: NaN
   }),
   positionType: yoga.POSITION_TYPE_RELATIVE,
   flexWrap: yoga.WRAP_NO_WRAP,
-  flexBasis: 'auto',
+  flexBasis: "auto",
   flexGrow: 0,
   flexShrink: 1,
   children: List(),
-  aspectRatio: 'auto',
+  aspectRatio: "auto",
   minWidth: NaN,
   maxWidth: NaN,
   minHeight: NaN,
-  maxHeight: NaN,
+  maxHeight: NaN
 });
 
 export default r;

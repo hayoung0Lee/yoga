@@ -8,15 +8,15 @@
  * @format
  */
 
-import yoga from 'yoga-layout/dist/entry-browser';
-import LayoutRecord from './LayoutRecord';
-import PositionRecord from './PositionRecord';
-import {JSEnumLookup} from './CodeJavaScript';
-import type {LayoutRecordT} from './LayoutRecord';
-import type {Yoga$Direction} from 'yoga-layout';
+import yoga from "yoga-layout-prebuilt";
+import LayoutRecord from "./LayoutRecord";
+import PositionRecord from "./PositionRecord";
+import { JSEnumLookup } from "./CodeJavaScript";
+import type { LayoutRecordT } from "./LayoutRecord";
+import type { Yoga$Direction } from "yoga-layout-prebuilt";
 
 function getValue(value) {
-  return typeof value === 'number' || /^\d+$/.test(value)
+  return typeof value === "number" || /^\d+$/.test(value)
     ? String(value)
     : `'${value}'`;
 }
@@ -27,28 +27,28 @@ function getEnum(yogaEnum: string, value: string | number): string {
     .filter(
       key =>
         JSEnumLookup[yogaEnum] &&
-        key.toLowerCase().startsWith(JSEnumLookup[yogaEnum].toLowerCase()),
+        key.toLowerCase().startsWith(JSEnumLookup[yogaEnum].toLowerCase())
     )
     .find(key => yoga[key] === value);
 
   return enumValue
     ? "'" +
         enumValue
-          .replace(/^([A-Z]+)_/, '')
-          .replace('_', '-')
+          .replace(/^([A-Z]+)_/, "")
+          .replace("_", "-")
           .toLowerCase() +
         "'"
     : getValue(value);
 }
 
-function getLayoutCode(node: LayoutRecordT, indent: string = ''): string {
+function getLayoutCode(node: LayoutRecordT, indent: string = ""): string {
   const lines = [];
   const untouchedLayout = LayoutRecord();
-  lines.push(indent + '<View style={{');
-  lines.push(indent + '  flex: 1,');
+  lines.push(indent + "<View style={{");
+  lines.push(indent + "  flex: 1,");
   Object.keys(node.toJSON()).forEach(key => {
-    if (key === 'border' && !node.border.equals(untouchedLayout[key])) {
-      ['Top', 'Left', 'Right', 'Bottom'].forEach(pKey => {
+    if (key === "border" && !node.border.equals(untouchedLayout[key])) {
+      ["Top", "Left", "Right", "Bottom"].forEach(pKey => {
         if (
           untouchedLayout[key][pKey.toLowerCase()] !==
           node.border[pKey.toLowerCase()]
@@ -56,8 +56,8 @@ function getLayoutCode(node: LayoutRecordT, indent: string = ''): string {
           lines.push(
             indent +
               `  border${pKey}Width: ${getValue(
-                node.border[pKey.toLowerCase()],
-              )},`,
+                node.border[pKey.toLowerCase()]
+              )},`
           );
         }
       });
@@ -65,7 +65,7 @@ function getLayoutCode(node: LayoutRecordT, indent: string = ''): string {
       node[key] instanceof PositionRecord &&
       !node[key].equals(untouchedLayout[key])
     ) {
-      const {top, left, right, bottom} = node[key].toJS();
+      const { top, left, right, bottom } = node[key].toJS();
       if (
         top &&
         top !== untouchedLayout[key].top &&
@@ -80,13 +80,13 @@ function getLayoutCode(node: LayoutRecordT, indent: string = ''): string {
       const alreadySet = [];
       if (top && top !== untouchedLayout[key].top && top === bottom) {
         lines.push(indent + `  ${key}Vertical: ${getValue(node[key].top)},`);
-        alreadySet.push('top', 'bottom');
+        alreadySet.push("top", "bottom");
       }
       if (left && left !== untouchedLayout[key].left && left === right) {
         lines.push(indent + `  ${key}Horizontal: ${getValue(node[key].left)},`);
-        alreadySet.push('left', 'right');
+        alreadySet.push("left", "right");
       }
-      ['left', 'top', 'right', 'bottom'].forEach((pKey, i) => {
+      ["left", "top", "right", "bottom"].forEach((pKey, i) => {
         if (
           node[key][pKey] !== untouchedLayout[key][pKey] &&
           alreadySet.indexOf(pKey) === -1 &&
@@ -96,18 +96,18 @@ function getLayoutCode(node: LayoutRecordT, indent: string = ''): string {
           lines.push(
             indent +
               `  ${key}${pKey[0].toUpperCase()}${pKey.substr(1)}: ${getValue(
-                node[key][pKey],
-              )},`,
+                node[key][pKey]
+              )},`
           );
         }
       });
     } else if (
-      key === 'positionType' &&
+      key === "positionType" &&
       node[key] === yoga.POSITION_TYPE_ABSOLUTE
     ) {
       lines.push(indent + `  position: 'absolute',`);
     } else if (
-      key !== 'children' &&
+      key !== "children" &&
       node[key] !== untouchedLayout[key] &&
       node[key]
     ) {
@@ -115,37 +115,37 @@ function getLayoutCode(node: LayoutRecordT, indent: string = ''): string {
     }
   });
   if (node.children.size > 0) {
-    lines.push(indent + '}}>');
+    lines.push(indent + "}}>");
   } else {
-    lines.push(indent + '}} />');
+    lines.push(indent + "}} />");
   }
   if (node.children.size > 0) {
     lines.push(
       ...node.children
         .toJSON()
-        .map(child => getLayoutCode(child, indent + '  ')),
+        .map(child => getLayoutCode(child, indent + "  "))
     );
   }
   if (node.children.size > 0) {
-    lines.push(indent + '</View>');
+    lines.push(indent + "</View>");
   }
-  return lines.join('\n');
+  return lines.join("\n");
 }
 
 export default function generateCode(
   root: LayoutRecordT,
-  direction: Yoga$Direction,
+  direction: Yoga$Direction
 ): string {
   return [
     `import React, {Component} from 'react';`,
     `import {View} from 'react-native';`,
-    '',
-    'export default class MyLayout extends Component {',
-    '  render() {',
-    '    return (',
-    getLayoutCode(root, '      '),
-    '    );',
-    '  }',
-    '};',
-  ].join('\n');
+    "",
+    "export default class MyLayout extends Component {",
+    "  render() {",
+    "    return (",
+    getLayoutCode(root, "      "),
+    "    );",
+    "  }",
+    "};"
+  ].join("\n");
 }
