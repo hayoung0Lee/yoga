@@ -6,58 +6,58 @@
  */
 
 // @flow
-import yoga from "yoga-layout-prebuilt";
-import LayoutRecord from "./LayoutRecord";
-import PositionRecord from "./PositionRecord";
-import type { LayoutRecordT } from "./LayoutRecord";
-import type { Yoga$Direction, Yoga$Node } from "yoga-layout-prebuilt";
+import yoga from 'yoga-layout/dist/entry-browser';
+import LayoutRecord from './LayoutRecord';
+import PositionRecord from './PositionRecord';
+import type {LayoutRecordT} from './LayoutRecord';
+import type {Yoga$Direction, Yoga$Node} from 'yoga-layout';
 
 const enumLookup = {
   flexDirection: {
-    [yoga.FLEX_DIRECTION_COLUMN]: "CKFlexboxDirectionVertical",
-    [yoga.FLEX_DIRECTION_ROW]: "CKFlexboxDirectionHorizontal",
-    [yoga.FLEX_DIRECTION_COLUMN_REVERSE]: "CKFlexboxDirectionVerticalReverse",
-    [yoga.FLEX_DIRECTION_ROW_REVERSE]: "CKFlexboxDirectionHorizontalReverse"
+    [yoga.FLEX_DIRECTION_COLUMN]: 'CKFlexboxDirectionVertical',
+    [yoga.FLEX_DIRECTION_ROW]: 'CKFlexboxDirectionHorizontal',
+    [yoga.FLEX_DIRECTION_COLUMN_REVERSE]: 'CKFlexboxDirectionVerticalReverse',
+    [yoga.FLEX_DIRECTION_ROW_REVERSE]: 'CKFlexboxDirectionHorizontalReverse',
   },
   alignItems: {
-    [yoga.ALIGN_FLEX_START]: "CKFlexboxAlignItemsStart",
-    [yoga.ALIGN_FLEX_END]: "CKFlexboxAlignItemsEnd",
-    [yoga.ALIGN_CENTER]: "CKFlexboxAlignItemsCenter",
-    [yoga.ALIGN_BASELINE]: "CKFlexboxAlignItemsBaseline",
-    [yoga.ALIGN_STRETCH]: "CKFlexboxAlignItemsStretch"
+    [yoga.ALIGN_FLEX_START]: 'CKFlexboxAlignItemsStart',
+    [yoga.ALIGN_FLEX_END]: 'CKFlexboxAlignItemsEnd',
+    [yoga.ALIGN_CENTER]: 'CKFlexboxAlignItemsCenter',
+    [yoga.ALIGN_BASELINE]: 'CKFlexboxAlignItemsBaseline',
+    [yoga.ALIGN_STRETCH]: 'CKFlexboxAlignItemsStretch',
   },
   alignSelf: {
-    [yoga.ALIGN_AUTO]: "CKFlexboxAlignSelfAuto",
-    [yoga.ALIGN_FLEX_START]: "CKFlexboxAlignSelfStart",
-    [yoga.ALIGN_FLEX_END]: "CKFlexboxAlignSelfEnd",
-    [yoga.ALIGN_CENTER]: "CKFlexboxAlignSelfCenter",
-    [yoga.ALIGN_BASELINE]: "CKFlexboxAlignSelfBaseline",
-    [yoga.ALIGN_STRETCH]: "CKFlexboxAlignSelfStretch"
+    [yoga.ALIGN_AUTO]: 'CKFlexboxAlignSelfAuto',
+    [yoga.ALIGN_FLEX_START]: 'CKFlexboxAlignSelfStart',
+    [yoga.ALIGN_FLEX_END]: 'CKFlexboxAlignSelfEnd',
+    [yoga.ALIGN_CENTER]: 'CKFlexboxAlignSelfCenter',
+    [yoga.ALIGN_BASELINE]: 'CKFlexboxAlignSelfBaseline',
+    [yoga.ALIGN_STRETCH]: 'CKFlexboxAlignSelfStretch',
   },
   alignContent: {
-    [yoga.ALIGN_FLEX_START]: "CKFlexboxAlignContentStart",
-    [yoga.ALIGN_FLEX_END]: "CKFlexboxAlignContentEnd",
-    [yoga.ALIGN_CENTER]: "CKFlexboxAlignContentCenter",
-    [yoga.ALIGN_SPACE_BETWEEN]: "CKFlexboxAlignContentSpaceBetween",
-    [yoga.ALIGN_SPACE_AROUND]: "CKFlexboxAlignContentSpaceAround",
-    [yoga.ALIGN_STRETCH]: "CKFlexboxAlignContentStretch"
+    [yoga.ALIGN_FLEX_START]: 'CKFlexboxAlignContentStart',
+    [yoga.ALIGN_FLEX_END]: 'CKFlexboxAlignContentEnd',
+    [yoga.ALIGN_CENTER]: 'CKFlexboxAlignContentCenter',
+    [yoga.ALIGN_SPACE_BETWEEN]: 'CKFlexboxAlignContentSpaceBetween',
+    [yoga.ALIGN_SPACE_AROUND]: 'CKFlexboxAlignContentSpaceAround',
+    [yoga.ALIGN_STRETCH]: 'CKFlexboxAlignContentStretch',
   },
   justifyContent: {
-    [yoga.JUSTIFY_FLEX_START]: "CKFlexboxJustifyContentStart",
-    [yoga.JUSTIFY_CENTER]: "CKFlexboxJustifyContentCenter",
-    [yoga.JUSTIFY_FLEX_END]: "CKFlexboxJustifyContentEnd",
-    [yoga.JUSTIFY_SPACE_BETWEEN]: "CKFlexboxJustifyContentSpaceBetween",
-    [yoga.JUSTIFY_SPACE_AROUND]: "CKFlexboxJustifyContentSpaceAround"
+    [yoga.JUSTIFY_FLEX_START]: 'CKFlexboxJustifyContentStart',
+    [yoga.JUSTIFY_CENTER]: 'CKFlexboxJustifyContentCenter',
+    [yoga.JUSTIFY_FLEX_END]: 'CKFlexboxJustifyContentEnd',
+    [yoga.JUSTIFY_SPACE_BETWEEN]: 'CKFlexboxJustifyContentSpaceBetween',
+    [yoga.JUSTIFY_SPACE_AROUND]: 'CKFlexboxJustifyContentSpaceAround',
   },
   flexWrap: {
-    [yoga.WRAP_NO_WRAP]: "CKFlexboxWrapNoWrap",
-    [yoga.WRAP_WRAP]: "CKFlexboxWrapWrap",
-    [yoga.WRAP_WRAP_REVERSE]: "CKFlexboxWrapWrapReverse"
+    [yoga.WRAP_NO_WRAP]: 'CKFlexboxWrapNoWrap',
+    [yoga.WRAP_WRAP]: 'CKFlexboxWrapWrap',
+    [yoga.WRAP_WRAP_REVERSE]: 'CKFlexboxWrapWrapReverse',
   },
   positionType: {
-    [yoga.POSITION_TYPE_RELATIVE]: "CKFlexboxPositionTypeRelative",
-    [yoga.POSITION_TYPE_ABSOLUTE]: "CKFlexboxPositionTypeAbsolute"
-  }
+    [yoga.POSITION_TYPE_RELATIVE]: 'CKFlexboxPositionTypeRelative',
+    [yoga.POSITION_TYPE_ABSOLUTE]: 'CKFlexboxPositionTypeAbsolute',
+  },
 };
 
 const untouchedLayout = LayoutRecord({});
@@ -65,17 +65,17 @@ const untouchedPosition = PositionRecord({});
 
 function keyLookup(key: string): string {
   const keyLookup = {
-    flexWrap: "wrap",
-    flexDirection: "direction"
+    flexWrap: 'wrap',
+    flexDirection: 'direction',
   };
   return keyLookup[key] || key;
 }
 
 function getValue(value) {
-  if (typeof value === "string" && /%$/.test(value)) {
+  if (typeof value === 'string' && /%$/.test(value)) {
     return `RCRelativeDimension::Percent(${parseFloat(value)})`;
-  } else if (value === "auto") {
-    return "RCRelativeDimension::Auto()";
+  } else if (value === 'auto') {
+    return 'RCRelativeDimension::Auto()';
   } else {
     return String(parseFloat(value));
   }
@@ -83,47 +83,45 @@ function getValue(value) {
 
 function getLayoutCode(
   node: LayoutRecordT,
-  indent: string = "",
-  isRoot?: boolean
+  indent: string = '',
+  isRoot?: boolean,
 ): string {
   const lines = [];
   const isFlexbox = node.children.size > 0;
 
   lines.push(
     indent +
-      `${isRoot ? "" : `.component = \n${indent}`}[${
-        isFlexbox ? "CKFlexboxComponent" : "CKComponent"
-      }`
+      `${isRoot ? '' : `.component = \n${indent}`}[${
+        isFlexbox ? 'CKFlexboxComponent' : 'CKComponent'
+      }`,
   );
   lines.push(indent + ` newWithView:{}`);
-  lines.push(
-    indent + ` size:{${getValue(node.width)},${getValue(node.height)}}`
-  );
+  lines.push(indent + ` size:{${getValue(node.width)},${getValue(node.height)}}`);
 
   const CKFlexboxComponentStyle = [
-    "direction",
-    "margin",
-    "justifyContent",
-    "alignItems",
-    "alignContent",
-    "wrap",
-    "padding",
-    "border"
+    'direction',
+    'margin',
+    'justifyContent',
+    'alignItems',
+    'alignContent',
+    'wrap',
+    'padding',
+    'border',
   ];
   const CKFlexboxComponentChild = [
-    "margin",
-    "padding",
-    "flexGrow",
-    "flexShrink",
-    "flexBasis",
-    "alignSelf",
-    "position"
+    'margin',
+    'padding',
+    'flexGrow',
+    'flexShrink',
+    'flexBasis',
+    'alignSelf',
+    'position',
   ];
 
   if (isFlexbox) {
     // render styles
     lines.push(indent + ` style:{`);
-    indent += "\t";
+    indent += '\t';
     CKFlexboxComponentStyle.forEach(key => {
       let line = renderKey(node, key, indent);
       if (line) {
@@ -134,7 +132,7 @@ function getLayoutCode(
     lines.push(indent + ` }`);
 
     // render children
-    lines.push(indent + " children:{");
+    lines.push(indent + ' children:{');
     lines.push(
       ...node.children
         .toJSON()
@@ -142,13 +140,13 @@ function getLayoutCode(
           child =>
             `${indent}\t{\n${getLayoutCode(
               child,
-              indent + "\t\t"
-            )}\n${indent}\t},`
-        )
+              indent + '\t\t',
+            )}\n${indent}\t},`,
+        ),
     );
-    lines.push(indent + `}]${isRoot ? ";" : ","}`);
+    lines.push(indent + `}]${isRoot ? ';' : ','}`);
   } else {
-    lines[lines.length - 1] += "],";
+    lines[lines.length - 1] += '],';
     CKFlexboxComponentChild.forEach(key => {
       let line = renderKey(node, key, indent);
       if (line) {
@@ -157,7 +155,7 @@ function getLayoutCode(
     });
   }
 
-  return lines.join("\n");
+  return lines.join('\n');
 }
 
 function renderKey(node: Yoga$Node, key: string, indent: string): ?string {
@@ -168,20 +166,20 @@ function renderKey(node: Yoga$Node, key: string, indent: string): ?string {
     const lines = [];
     lines.push(indent + `.${key} = {`);
 
-    if (key === "position") {
+    if (key === 'position') {
       lines.push(
-        indent + `\t.type = ${enumLookup.positionType[node.positionType]},`
+        indent + `\t.type = ${enumLookup.positionType[node.positionType]},`,
       );
     }
 
-    ["top", "start", "end", "bottom"].forEach(pKey => {
+    ['top', 'start', 'end', 'bottom'].forEach(pKey => {
       if (node[key][pKey]) {
         lines.push(indent + `\t.${pKey} = ${getValue(node[key][pKey])},`);
       }
     });
 
     lines.push(indent + `},`);
-    return lines.join("\n");
+    return lines.join('\n');
   } else if (node[key] !== untouchedLayout[key]) {
     if (enumLookup[key]) {
       return indent + `.${keyLookup(key)} = ${enumLookup[key][node[key]]},`;
@@ -193,9 +191,9 @@ function renderKey(node: Yoga$Node, key: string, indent: string): ?string {
 
 export default function generateCode(
   root: LayoutRecordT,
-  direction: Yoga$Direction
+  direction: Yoga$Direction,
 ): string {
-  return ["CKFlexboxComponent *c =", getLayoutCode(root, "\t", true)].join(
-    "\n"
+  return ['CKFlexboxComponent *c =', getLayoutCode(root, '\t', true)].join(
+    '\n',
   );
 }

@@ -8,23 +8,23 @@
  * @format
  */
 
-import yoga from "yoga-layout-prebuilt";
-import LayoutRecord from "./LayoutRecord";
-import PositionRecord from "./PositionRecord";
-import { JSEnumLookup } from "./CodeJavaScript";
-import type { LayoutRecordT } from "./LayoutRecord";
-import type { Yoga$Direction } from "yoga-layout-prebuilt";
+import yoga from 'yoga-layout/dist/entry-browser';
+import LayoutRecord from './LayoutRecord';
+import PositionRecord from './PositionRecord';
+import {JSEnumLookup} from './CodeJavaScript';
+import type {LayoutRecordT} from './LayoutRecord';
+import type {Yoga$Direction} from 'yoga-layout';
 
 function getEnum(yogaEnum: string, value: string | number): string {
   const enumLookup = {
-    justifyContent: "Justify",
-    alignItems: "Align",
-    alignContent: "Align",
-    alignSelf: "Align",
-    position: "Position",
-    flexWrap: "Wrap",
-    positionType: "PositionType",
-    direction: "Direction"
+    justifyContent: 'Justify',
+    alignItems: 'Align',
+    alignContent: 'Align',
+    alignSelf: 'Align',
+    position: 'Position',
+    flexWrap: 'Wrap',
+    positionType: 'PositionType',
+    direction: 'Direction',
   };
 
   if (!enumLookup[yogaEnum]) {
@@ -32,47 +32,47 @@ function getEnum(yogaEnum: string, value: string | number): string {
   } else {
     const enumValue = Object.keys(yoga)
       .filter(key =>
-        key.toLowerCase().startsWith(JSEnumLookup[yogaEnum].toLowerCase())
+        key.toLowerCase().startsWith(JSEnumLookup[yogaEnum].toLowerCase()),
       )
       .find(key => yoga[key] === value);
 
     return `Yoga${enumLookup[yogaEnum]}.${
-      enumValue ? enumValue.replace(/^([A-Z]+)_/, "") : value
+      enumValue ? enumValue.replace(/^([A-Z]+)_/, '') : value
     }`;
   }
 }
 
 function dipOrPercent(value) {
   console.log(value);
-  return value === "auto"
-    ? "Auto"
-    : typeof value === "string" && /%$/.test(value)
-    ? "Percent"
-    : "Dip";
+  return value === 'auto'
+    ? 'Auto'
+    : typeof value === 'string' && /%$/.test(value)
+    ? 'Percent'
+    : 'Dip';
 }
 
 function getValue(value) {
-  return value === "auto" ? "" : `, ${parseFloat(value)}`;
+  return value === 'auto' ? '' : `, ${parseFloat(value)}`;
 }
 
 function getLayoutCode(
   node: LayoutRecordT,
-  indent: string = "",
-  isReturning?: boolean
+  indent: string = '',
+  isReturning?: boolean,
 ): string {
   const lines = [];
   const flexDirection = {
-    [yoga.FLEX_DIRECTION_ROW]: "Row",
-    [yoga.FLEX_DIRECTION_ROW_REVERSE]: "RowReverse",
-    [yoga.FLEX_DIRECTION_COLUMN]: "Column",
-    [yoga.FLEX_DIRECTION_COLUMN_REVERSE]: "ColumnReverse"
+    [yoga.FLEX_DIRECTION_ROW]: 'Row',
+    [yoga.FLEX_DIRECTION_ROW_REVERSE]: 'RowReverse',
+    [yoga.FLEX_DIRECTION_COLUMN]: 'Column',
+    [yoga.FLEX_DIRECTION_COLUMN_REVERSE]: 'ColumnReverse',
   };
 
   lines.push(
     indent +
-      `${isReturning ? "return " : ""}${
+      `${isReturning ? 'return ' : ''}${
         flexDirection[node.flexDirection]
-      }.create(c)`
+      }.create(c)`,
   );
   if (node.children.size > 0) {
     lines.push(
@@ -80,8 +80,8 @@ function getLayoutCode(
         .toJSON()
         .map(
           child =>
-            `${indent}\t.child(\n${getLayoutCode(child, indent + "\t\t")})`
-        )
+            `${indent}\t.child(\n${getLayoutCode(child, indent + '\t\t')})`,
+        ),
     );
   }
   const untouchedLayout = LayoutRecord();
@@ -91,11 +91,11 @@ function getLayoutCode(
       node[key] instanceof PositionRecord &&
       !node[key].equals(untouchedPosition)
     ) {
-      if (key === "border") {
-        lines.push(indent + "\t.border(", indent + "\t\tBorder.create(c)");
+      if (key === 'border') {
+        lines.push(indent + '\t.border(', indent + '\t\tBorder.create(c)');
       }
 
-      const { top, left, right, bottom } = node[key].toJS();
+      const {top, left, right, bottom} = node[key].toJS();
       if (
         top !== untouchedPosition.top &&
         top === left &&
@@ -105,13 +105,13 @@ function getLayoutCode(
         // all edges
         lines.push(
           indent +
-            (key === "border"
+            (key === 'border'
               ? `\t\t\t.width${dipOrPercent(
-                  node[key].top
+                  node[key].top,
                 )}(YogaEdge.ALL${getValue(node[key].top)})`
               : `\t.${key}${dipOrPercent(node[key].top)}(YogaEdge.ALL${getValue(
-                  node[key].top
-                )})`)
+                  node[key].top,
+                )})`),
         );
         return;
       }
@@ -119,30 +119,30 @@ function getLayoutCode(
       if (top !== untouchedPosition.top && top === bottom) {
         lines.push(
           indent +
-            (key === "border"
+            (key === 'border'
               ? `\t\t\t.width${dipOrPercent(
-                  node[key].top
+                  node[key].top,
                 )}(YogaEdge.VERTICAL${getValue(node[key].top)})`
               : `\t.${key}${dipOrPercent(
-                  node[key].top
-                )}(YogaEdge.VERTICAL${getValue(node[key].top)})`)
+                  node[key].top,
+                )}(YogaEdge.VERTICAL${getValue(node[key].top)})`),
         );
-        alreadySet.push("top", "bottom");
+        alreadySet.push('top', 'bottom');
       }
       if (left !== untouchedPosition.left && left === right) {
         lines.push(
           indent +
-            (key === "border"
+            (key === 'border'
               ? `\t\t\t.width${dipOrPercent(
-                  node[key].left
+                  node[key].left,
                 )}(YogaEdge.HORIZONTAL${getValue(node[key].left)})`
               : `\t.${key}${dipOrPercent(
-                  node[key].left
-                )}(YogaEdge.HORIZONTAL${getValue(node[key].left)})`)
+                  node[key].left,
+                )}(YogaEdge.HORIZONTAL${getValue(node[key].left)})`),
         );
-        alreadySet.push("left", "right");
+        alreadySet.push('left', 'right');
       }
-      ["left", "top", "right", "bottom"].forEach((pKey, i) => {
+      ['left', 'top', 'right', 'bottom'].forEach((pKey, i) => {
         if (
           node[key][pKey] !== untouchedPosition[pKey] &&
           alreadySet.indexOf(pKey) === -1 &&
@@ -150,46 +150,46 @@ function getLayoutCode(
         ) {
           lines.push(
             indent +
-              (key === "border"
+              (key === 'border'
                 ? `\t\t\t.width${dipOrPercent(
-                    node.border[pKey]
+                    node.border[pKey],
                   )}(YogaEdge.${pKey.toUpperCase()}${getValue(
-                    node.border[pKey]
+                    node.border[pKey],
                   )})`
                 : `\t.${key}${dipOrPercent(
-                    node[key][pKey]
+                    node[key][pKey],
                   )}(YogaEdge.${pKey.toUpperCase()}${getValue(
-                    node[key][pKey]
-                  )})`)
+                    node[key][pKey],
+                  )})`),
           );
         }
       });
 
-      if (key === "border") {
+      if (key === 'border') {
         lines.push(
-          indent + "\t\t\t.color(YogaEdge.ALL, 0xfff36b7f)",
-          indent + "\t\t\t.build())"
+          indent + '\t\t\t.color(YogaEdge.ALL, 0xfff36b7f)',
+          indent + '\t\t\t.build())',
         );
       }
     } else if (
-      key !== "children" &&
-      key !== "flexDirection" &&
+      key !== 'children' &&
+      key !== 'flexDirection' &&
       node[key] !== untouchedLayout[key] &&
       node[key]
     ) {
-      if (node[key] === "auto") {
+      if (node[key] === 'auto') {
         lines.push(indent + `\t.${key}Auto(${getEnum(key, node[key])})`);
-      } else if (typeof node[key] === "string" && /%$/.test(node[key])) {
+      } else if (typeof node[key] === 'string' && /%$/.test(node[key])) {
         lines.push(indent + `\t.${key}Percent(${parseFloat(node[key])})`);
       } else if (
         [
-          "width",
-          "height",
-          "minHeight",
-          "maxHeight",
-          "minWidth",
-          "maxWidth",
-          "flexBasis"
+          'width',
+          'height',
+          'minHeight',
+          'maxHeight',
+          'minWidth',
+          'maxWidth',
+          'flexBasis',
         ].indexOf(key) > -1
       ) {
         lines.push(indent + `\t.${key}Dip(${getEnum(key, node[key])})`);
@@ -199,21 +199,21 @@ function getLayoutCode(
     }
   });
 
-  return lines.join("\n");
+  return lines.join('\n');
 }
 
 export default function generateCode(
   root: LayoutRecordT,
-  direction: Yoga$Direction
+  direction: Yoga$Direction,
 ): string {
   return [
-    "@LayoutSpec",
-    "public class PlaygroundComponentSpec {",
-    "\t@OnCreateLayout",
-    "\tstatic Component onCreateLayout(ComponentContext c) {",
-    getLayoutCode(root, "\t\t", true),
-    "\t\t\t.build();",
-    "\t}",
-    "}"
-  ].join("\n");
+    '@LayoutSpec',
+    'public class PlaygroundComponentSpec {',
+    '\t@OnCreateLayout',
+    '\tstatic Component onCreateLayout(ComponentContext c) {',
+    getLayoutCode(root, '\t\t', true),
+    '\t\t\t.build();',
+    '\t}',
+    '}',
+  ].join('\n');
 }
