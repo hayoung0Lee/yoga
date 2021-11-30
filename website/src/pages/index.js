@@ -10,8 +10,6 @@
 
 import React from 'react';
 import Playground from '../components/Playground/src';
-import { Row, Col } from 'antd';
-import './index.css';
 
 const playgroundInitialState = {
   width: 500,
@@ -60,19 +58,11 @@ const playgroundInitialState = {
   maxHeight: null,
 };
 
-const PlaygroundSection = () => (
-  <Row>
-    <Col lg={24} md={0} sm={0} xs={0}>
-      <Playground
-        selectedNodePath={[]}
-        showGuides={true}
-        height={601}
-        layoutDefinition={playgroundInitialState}
-      />
-    </Col>
-  </Row>
-);
-
 export default () => (
-  <PlaygroundSection />
+  <Playground
+    selectedNodePath={[]}
+    showGuides={true}
+    height={601}
+    layoutDefinition={playgroundInitialState}
+  />
 );
